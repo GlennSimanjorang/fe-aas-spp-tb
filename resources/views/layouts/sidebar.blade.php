@@ -20,4 +20,5 @@
             <i class="fas fa-bell mr-3"></i> Notifikasi
         </a>
     </nav>
+    @stack('scripts')
 </div>

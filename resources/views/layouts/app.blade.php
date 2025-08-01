@@ -10,6 +10,8 @@
     <!-- Tailwind (Vite) -->
     @vite('resources/css/app.css')
 
+    @stack('scripts')
+
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script>
 

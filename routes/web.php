@@ -12,3 +12,7 @@ Route::get('/siswa', function () {
 Route::get('/tunggakan', function () {
     return view('tunggakan.index');
 })->name('tunggakan.index');
+
+Route::get('/notifikasi', function () {
+    return view('notifikasi.index');
+})->name('notifikasi.index');

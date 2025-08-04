@@ -63,7 +63,6 @@
         tabButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const tab = this.dataset.tab;
-                // Construct the URL and navigate
                 const url = new URL(window.location.href);
                 url.searchParams.set('tab', tab);
                 window.location.href = url.toString();

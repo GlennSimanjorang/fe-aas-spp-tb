@@ -16,3 +16,11 @@ Route::get('/tunggakan', function () {
 Route::get('/notifikasi', function () {
     return view('notifikasi.index');
 })->name('notifikasi.index');
+
+Route::get('/pembayaran', function () {
+    return view('pembayaran.index');
+})->name('pembayaran.index');
+
+Route::get('/laporan', function () {
+    return view('laporan.index');
+})->name('laporan.index');

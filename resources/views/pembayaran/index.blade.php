@@ -1,0 +1,68 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container mx-auto">
+    <div class="flex justify-between items-center bg-blue-600 text-white p-4 rounded-lg shadow-md mb-6">
+        <h1 class="text-xl font-semibold">Management Pembayaran</h1>
+        <div class="flex space-x-4">
+            <button class="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                Input Manual
+            </button>
+            <button class="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                Konfirmasi Massal
+            </button>
+            <button class="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m-3 3V4m-3 14h6a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Export Data
+            </button>
+        </div>
+    </div>
+
+    <div class="flex bg-white rounded-lg shadow-md mb-6 p-1">
+        <button class="tab-button {{ request()->get('tab', 'pending') == 'pending' ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100' }} px-6 py-2 rounded-md font-semibold flex items-center mr-2"
+                data-tab="pending">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Pending Konfirmasi
+        </button>
+        <button class="tab-button {{ request()->get('tab') == 'riwayat' ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100' }} px-6 py-2 rounded-md font-semibold flex items-center mr-2"
+                data-tab="riwayat">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v-2.25c0-.414-.336-.75-.75-.75S10.5 3.586 10.5 4v2.25m3-.75v-.75c0-.414-.336-.75-.75-.75s-.75.336-.75.75v.75m-6 3h1.5m3.75-3.75h-.75m-2.25 0h.75m-2.25 0h1.5M12 6.003h.01"></path></svg>
+            Riwayat Pembayaran
+        </button>
+        <button class="tab-button {{ request()->get('tab') == 'bukti' ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100' }} px-6 py-2 rounded-md font-semibold flex items-center"
+                data-tab="bukti">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            Bukti Transfer
+        </button>
+    </div>
+
+    <div id="tabContent">
+        @if(request()->get('tab', 'pending') == 'pending')
+            @include('pembayaran.partials.pending')
+        @elseif(request()->get('tab') == 'riwayat')
+            @include('pembayaran.partials.riwayat')
+        @elseif(request()->get('tab') == 'bukti')
+            @include('pembayaran.partials.bukti')
+        @endif
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const tab = this.dataset.tab;
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tab);
+                window.location.href = url.toString();
+            });
+        });
+    });
+</script>
+@endpush
+@endsection

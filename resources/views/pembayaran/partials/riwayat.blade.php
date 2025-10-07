@@ -27,20 +27,30 @@
                 </tr>
             </thead>
             <tbody>
+                {{-- LOOPING DATA PEMBAYARAN RIWAYAT --}}
+                @forelse($payment_data as $data)
                 <tr class="border-b border-gray-200">
                     <td class="py-2 px-4"><input type="checkbox"></td>
-                    <td class="py-2 px-4">24/07/2025 14:32</td>
-                    <td class="py-2 px-4">2024001</td>
-                    <td class="py-2 px-4">Satria Nur Najmuddin</td>
-                    <td class="py-2 px-4">XII RPL 2</td>
-                    <td class="py-2 px-4">Juli 2025</td>
-                    <td class="py-2 px-4">Rp 600.000</td>
-                    <td class="py-2 px-4">Transfer Bank</td>
-                    <td class="py-2 px-4">TF240724001</td>
+                    <td class="py-2 px-4">{{ $data->waktu }}</td>
+                    <td class="py-2 px-4">{{ $data->nis }}</td>
+                    <td class="py-2 px-4">{{ $data->nama }}</td>
+                    <td class="py-2 px-4">{{ $data->kelas }}</td>
+                    <td class="py-2 px-4">{{ $data->periode }}</td>
+                    <td class="py-2 px-4">{{ $data->jumlah }}</td>
+                    <td class="py-2 px-4">{{ $data->metode }}</td>
+                    <td class="py-2 px-4">{{ $data->bukti }}</td>
                     <td class="py-2 px-4">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Lunas</span>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                            {{ $data->status == 'Lunas' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $data->status }}
+                        </span>
                     </td>
                 </tr>
+                @empty
+                <tr>
+                    <td colspan="10" class="py-4 text-center text-gray-500">Tidak ada data riwayat pembayaran.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

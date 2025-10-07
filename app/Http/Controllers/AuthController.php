@@ -3,39 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // <-- Wajib import ini
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
-    public function showLogin() // <--- PASTIIN NAMA METHOD INI BENAR
+    public function showLogin()
     {
         return view('auth.login');
     }
 
     public function login(Request $request)
     {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
         $email = $request->email;
         $password = $request->password;
 
-        // Cek 1: Logic Dummy (Hanya untuk keperluan frontend)
-        if ($email == 'admin@test.com' && $password == 'password') {
-            
+        // Kirim login ke API backend (port 8001)
+        $response = Http::post('http://127.0.0.1:8001/api/signin', [
+            'email' => $email,
+            'password' => $password,
+        ]);
 
-            $user = \App\Models\User::firstOrCreate([
-                'email' => $email
-            ], [
-                // Set password hash dummy
-                'password' => bcrypt('password'),
-                'name' => 'Admin Dummy' 
-            ]);
+        $data = $response->json();
 
-            // 2. Lakukan proses login (membuat sesi)
-            Auth::login($user); 
+        if(isset($data['success']) && $data['success']){
+            // Simpan token di session
+            session(['token' => $data['content']['token']]);
+            session(['user' => $data['content']['user'] ?? null]);
 
-            return redirect()->route('dashboard'); 
+            return redirect()->route('dashboard'); // redirect setelah login
         }
 
-        // Logic Gagal
-        return redirect()->back()->withErrors(['email' => 'Kredensial tidak valid.']);
+        return redirect()->back()->withErrors([
+            'email' => $data['message'] ?? 'Login gagal. Silakan coba lagi.'
+        ])->withInput();
+    }
+
+    public function logout()
+    {
+        $token = session('token');
+        if($token){
+            Http::withToken($token)->post('http://127.0.0.1:8001/api/signout');
+        }
+        session()->forget('token');
+        session()->forget('user');
+
+        return redirect()->route('login');
     }
 }

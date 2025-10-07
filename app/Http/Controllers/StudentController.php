@@ -10,7 +10,7 @@ class StudentController extends Controller
     {
         // 1. DATA DUMMY UNTUK KARTU (cards)
         $cards = [
-            (object)['title' => 'Total Siswa Aktif', 'value' => '1,024', 'trend' => '5%'],
+            (object)['title' => 'Total Siswa Aktif', 'value' => '1,067', 'trend' => '5%'],
             (object)['title' => 'Siswa Lulus', 'value' => '286', 'trend' => '15%'],
         ];
 

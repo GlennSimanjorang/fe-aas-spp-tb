@@ -14,15 +14,14 @@
         </div>
 
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
                 <strong class="font-bold">Gagal!</strong>
-                <span class="block sm:inline"> {{ $errors->first() }}</span>
+                <span class="block sm:inline">{{ $errors->first() }}</span>
             </div>
         @endif
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
-
             <div class="mb-5">
                 <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
                 <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus

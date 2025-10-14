@@ -3,45 +3,53 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. DATA DUMMY UNTUK KARTU (cards)
+        // 1. Cards (kamu bisa update logikanya nanti)
         $cards = [
-            (object)['title' => 'Total Siswa Aktif', 'value' => '1,067', 'trend' => '5%'],
-            (object)['title' => 'Siswa Lulus', 'value' => '286', 'trend' => '15%'],
+            (object)['title' => 'Total Siswa Aktif', 'value' => '...', 'trend' => '...'],
+            (object)['title' => 'Siswa Lulus', 'value' => '...', 'trend' => '...'],
         ];
 
-        // 2. DATA DUMMY UNTUK TABEL (list_siswa)
-        $list_siswa = [
-            (object)['nis' => '2024001', 'nama' => 'Ahmad Fauzi', 'kelas' => 'XII RPL 2', 'status' => 'Aktif'],
-            (object)['nis' => '2024002', 'nama' => 'Budi Santoso', 'kelas' => 'XI TKJ 1', 'status' => 'Aktif'],
-            (object)['nis' => '2024003', 'nama' => 'Citra Dewi', 'kelas' => 'X AKL 3', 'status' => 'Non-Aktif'],
-        ];
+        // 2. Ambil data siswa dari backend API
+        $response = Http::withToken(session('token'))
+            ->get('http://127.0.0.1:8001/api/students');
 
-        // 3. MENGIRIM DUA VARIABEL KE VIEW
+        $data = $response->json();
+
+        $list_siswa = isset($data['success']) && $data['success']
+            ? collect($data['content'])
+            : collect();
+
+        // 3. Kirim data ke view
         return view('siswa.index', [
             'list_siswa' => $list_siswa,
-            'cards' => $cards // <-- INI YANG PALING PENTING!
+            'cards' => $cards
         ]);
     }
 
     public function show($nis)
     {
-        // Dummy data untuk detail satu siswa
-        $siswa = (object)[
-            'nis' => $nis,
-            'nama' => 'Ahmad Fauzi',
-            'kelas' => 'XII RPL 2',
-            'wali_murid' => 'Bapak Joko',
-            'no_hp' => '0812xxxxxx',
-            'alamat' => 'Jl. Mawar No. 5',
-        ];
+        
+        $response = Http::withToken(session('token'))
+            ->get("http://127.0.0.1:8001/api/students/{$nis}");
+
+        $data = $response->json();
+
+        $siswa = isset($data['success']) && $data['success']
+            ? (object)$data['content']
+            : null;
+
+        if(!$siswa){
+            abort(404, 'Siswa tidak ditemukan');
+        }
 
         return view('siswa.show', [
-            'siswa' => $siswa,
+            'siswa' => $siswa
         ]);
     }
 }

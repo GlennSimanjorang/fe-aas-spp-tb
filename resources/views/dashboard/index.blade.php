@@ -18,7 +18,6 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {{-- LOOPING UNTUK MENGISI 3 KARTU DARI CONTROLLER --}}
         @foreach($data['cards'] as $card)
         <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
             <div class="flex items-center justify-between">
@@ -27,7 +26,6 @@
                     <p class="text-3xl font-bold text-gray-800 mt-2">{{ $card->value }}</p>
                 </div>
                 <div class="bg-blue-100 p-3 rounded-full">
-                    {{-- Ganti ikon sesuai kartu (opsional) --}}
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
@@ -51,7 +49,6 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
             <h3 class="text-xl font-bold text-gray-800">Pembayaran Baru</h3>
             <div class="relative mt-4 sm:mt-0 w-full sm:w-64">
-                {{-- Search Bar --}}
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -70,9 +67,38 @@
             <p class="text-sm text-gray-400">Gunakan kolom pencarian untuk menemukan siswa</p>
         </div>
         @else
-        {{-- ... TULIS KODE TABEL DI SINI, LALU LOOPING $data['pembayaran_baru'] ... --}}
+        {{-- TABEL PEMBAYARAN BARU --}}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Siswa</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kelas</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nominal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Bayar</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($data['pembayaran_baru'] as $index => $payment)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $index + 1 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $payment['student_name'] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $payment['class'] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $payment['amount'] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $payment['paid_at'] }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $payment['status'] == 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ ucfirst($payment['status']) }}
+                            </span>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
         @endif
-
 
         <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
             <button class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 disabled:opacity-50" disabled>

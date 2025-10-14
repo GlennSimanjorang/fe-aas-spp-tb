@@ -14,30 +14,29 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // Validasi input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        $email = $request->email;
-        $password = $request->password;
-
-        // Kirim login ke API backend (port 8001)
+        // Kirim login ke backend
         $response = Http::post('http://127.0.0.1:8001/api/signin', [
-            'email' => $email,
-            'password' => $password,
+            'email' => $request->email,
+            'password' => $request->password,
         ]);
 
         $data = $response->json();
 
-        if(isset($data['success']) && $data['success']){
+        if (isset($data['success']) && $data['success']) {
             // Simpan token di session
             session(['token' => $data['content']['token']]);
-            session(['user' => $data['content']['user'] ?? null]);
 
-            return redirect()->route('dashboard'); // redirect setelah login
+            // Redirect langsung ke dashboard
+            return redirect()->route('dashboard');
         }
 
+        // Jika login gagal
         return redirect()->back()->withErrors([
             'email' => $data['message'] ?? 'Login gagal. Silakan coba lagi.'
         ])->withInput();
@@ -46,11 +45,11 @@ class AuthController extends Controller
     public function logout()
     {
         $token = session('token');
-        if($token){
+        if ($token) {
             Http::withToken($token)->post('http://127.0.0.1:8001/api/signout');
         }
+
         session()->forget('token');
-        session()->forget('user');
 
         return redirect()->route('login');
     }

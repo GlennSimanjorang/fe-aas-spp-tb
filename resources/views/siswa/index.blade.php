@@ -43,7 +43,7 @@
             {{-- Search bar (optional) --}}
         </div>
 
-        @if($list_siswa->count() > 0)
+        @if(count($list_siswa) > 0)
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">

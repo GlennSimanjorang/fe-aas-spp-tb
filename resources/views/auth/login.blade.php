@@ -39,12 +39,14 @@
         
         .login-container {
             width: 100%;
-            max-width: 440px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             animation: fadeIn 0.6s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         @keyframes fadeIn {
@@ -55,7 +57,7 @@
         .login-header {
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
-            padding: 35px 20px;
+            padding: 40px 20px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -72,21 +74,21 @@
         }
         
         .logo {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            font-size: 32px;
+            font-size: 28px;
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.3);
         }
         
         .login-header h1 {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: 0.5px;
@@ -99,7 +101,7 @@
         }
         
         .login-body {
-            padding: 35px;
+            padding: 40px 35px;
         }
         
         .alert {
@@ -143,12 +145,13 @@
         
         .form-input {
             width: 100%;
-            padding: 15px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            padding: 16px 18px;
+            border: 2px solid #f0f0f0;
+            border-radius: 14px;
             font-size: 15px;
             transition: all 0.3s;
             background-color: #f9fafb;
+            color: #1f2937;
         }
         
         .form-input:focus {
@@ -174,6 +177,9 @@
             transition: color 0.2s;
             padding: 4px;
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .password-toggle:hover {
@@ -187,7 +193,7 @@
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -263,25 +269,25 @@
         
         @media (max-width: 480px) {
             .login-container {
-                border-radius: 16px;
+                border-radius: 20px;
             }
             
             .login-body {
-                padding: 25px 20px;
+                padding: 30px 25px;
             }
             
             .login-header {
-                padding: 25px 15px;
+                padding: 30px 20px;
             }
             
             .logo {
-                width: 70px;
-                height: 70px;
-                font-size: 28px;
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
             }
             
             .login-header h1 {
-                font-size: 22px;
+                font-size: 20px;
             }
         }
     </style>
@@ -296,7 +302,7 @@
     <div class="login-container">
         <div class="login-header">
             <div class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                     <circle cx="9" cy="7" r="4"></circle>
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>

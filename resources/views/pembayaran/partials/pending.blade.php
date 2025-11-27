@@ -9,11 +9,17 @@
         {{-- Logika sederhana untuk ikon berdasarkan title --}}
         <div class="bg-yellow-100 p-3 rounded-full">
             @if($card->title == 'Menunggu Konfirmasi')
-                <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
             @elseif($card->title == 'Total Nilai Pending')
-                <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zM4 17a1 1 0 011-1h14a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3z"></path></svg>
+            <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zM4 17a1 1 0 011-1h14a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3z"></path>
+            </svg>
             @else
-                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h.01M16 11h.01M19 5h-4V3a1 1 0 00-1-1H7a1 1 0 00-1 1v2H3a2 2 0 00-2 2v10a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2z"></path></svg>
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h.01M16 11h.01M19 5h-4V3a1 1 0 00-1-1H7a1 1 0 00-1 1v2H3a2 2 0 00-2 2v10a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2z"></path>
+            </svg>
             @endif
         </div>
     </div>
@@ -69,7 +75,11 @@
                         </span>
                     </td>
                     <td class="py-2 px-4">
-                        <button class="bg-blue-600 text-white text-xs px-2 py-1 rounded-md">Lihat Bukti</button>
+                        {{-- Menggunakan id_transaksi yang kita tambahkan di Controller --}}
+                        <a href="{{ route('pembayaran.show', $data->id_transaksi) }}"
+                            class="bg-blue-600 text-white text-xs px-2 py-1 rounded-md hover:bg-blue-700">
+                            Lihat Bukti
+                        </a>
                     </td>
                 </tr>
                 @empty

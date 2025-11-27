@@ -13,6 +13,23 @@
         </div>
     </div>
 
+    {{-- Notifikasi (Success, Error, Warning) --}}
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
+    @if(session('warning'))
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg relative" role="alert">
+            <span class="block sm:inline">{{ session('warning') }}</span>
+        </div>
+    @endif
+    
     {{-- Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @foreach($cards as $card)
@@ -40,6 +57,10 @@
             <div class="mb-4 md:mb-0">
                 <label class="font-bold text-lg text-gray-800">Daftar Siswa</label>
             </div>
+            {{-- Tombol Tambah Siswa --}}
+            <a href="{{ route('siswa.create') }}" class="bg-[#4A3AFF] hover:bg-[#3A2AFF] text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 text-center">
+                + Tambah Siswa Baru
+            </a>
             {{-- Search bar (optional) --}}
         </div>
 
@@ -59,16 +80,17 @@
                     @foreach($list_siswa as $siswa)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ $siswa['nisn'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $siswa['nama'] ?? $siswa['name'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $siswa['kelas'] ?? $siswa['class'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        {{-- Menggunakan nama atau name dari response API --}}
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $siswa['nama'] ?? $siswa['name'] ?? 'N/A' }}</td>
+                        {{-- Menggunakan kelas atau class dari response API --}}
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $siswa['kelas'] ?? $siswa['class'] ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                 Aktif
                             </span>
                         </td>
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            {{-- Route show menggunakan NISN sebagai parameter --}}
                             <a href="{{ route('siswa.show', $siswa['nisn']) }}" class="text-[#4A3AFF] hover:text-[#3A2AFF]">Detail</a>
                         </td>
                     </tr>
@@ -78,11 +100,11 @@
         </div>
         @else
         <div class="bg-gray-50 rounded-lg p-8 flex flex-col items-center justify-center border-2 border-dashed border-gray-200">
-            <p class="text-gray-500 mb-2">Data siswa akan muncul di sini</p>
-            <p class="text-sm text-gray-400">Gunakan kolom pencarian untuk menemukan siswa</p>
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            <p class="text-gray-500 mt-2">Tidak ada data siswa ditemukan.</p>
+            <a href="{{ route('siswa.create') }}" class="mt-3 text-sm font-medium text-[#4A3AFF] hover:text-[#3A2AFF]">Tambah Siswa Pertama</a>
         </div>
         @endif
     </div>
-
 </div>
 @endsection

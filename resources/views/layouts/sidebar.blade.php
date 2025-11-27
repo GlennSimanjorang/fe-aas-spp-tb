@@ -105,7 +105,7 @@
     </nav>
 
     <!-- Footer / Logout -->
-    <form method="POST" action="{{ route('logout') }}">
+    <form method="POST" action="/logout">
     @csrf
     <button type="submit" 
             class="text-xs text-gray-500 hover:text-gray-700 flex items-center mt-1 transition-colors duration-200">

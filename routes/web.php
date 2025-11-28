@@ -8,6 +8,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DuedateController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AcademicYearWebController;
 
 
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
@@ -17,6 +18,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Grup route yang memerlukan middleware 'auth.token'
 Route::middleware('auth.token')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
 
     // ----------------------------------------------------
     // START: Perubahan untuk SISWA (Menggunakan Route Resource)
@@ -30,10 +32,13 @@ Route::middleware('auth.token')->group(function () {
     ]);
     // END: Perubahan untuk SISWA
     // ----------------------------------------------------
+    Route::resource('academic-years', AcademicYearWebController::class);
+    
 
     Route::get('/tunggakan', [DuedateController::class, 'index'])->name('tunggakan.index'); 
     Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifikasi.index');
     Route::get('/pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
+    
 
     // Route Halaman Laporan (Index)
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index'); 

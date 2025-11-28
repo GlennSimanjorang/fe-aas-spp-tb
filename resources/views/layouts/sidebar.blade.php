@@ -58,6 +58,12 @@
         'active' => request()->is('users*')
         ],
         [
+        'label' => 'Academic Years',
+        'icon' => 'M12 8c-1.657 0-3 1.343-3 3v7h6v-7c0-1.657-1.343-3-3-3zM5 21h14M12 3v5',
+        'url' => '/academic-years',
+        'active' => request()->is('academic-years*')
+        ],
+        [
         'label' => 'Pembayaran',
         'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
         'url' => '/pembayaran',

@@ -14,62 +14,67 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Validasi input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        $response = Http::post('http://127.0.0.1:8001/api/signin', [
+
+        $loginResponse = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post('http://127.0.0.1:8001/api/signin', [
             'email' => $request->email,
             'password' => $request->password,
         ]);
 
-        $data = $response->json();
+        $loginData = $loginResponse->json();
+    
 
-        if (isset($data['success']) && $data['success']) {
-            $token = $data['content']['token'] ?? null;
-            
-            // --- DEBUGGING ROLE ---
-            // ASUMSI: Role ada di 'content' atau 'content' -> 'user'
-            
-            // Coba ambil dari berbagai tempat yang mungkin:
-            $userRole = null;
-            if (isset($data['content']['user']['role'])) {
-                $userRole = $data['content']['user']['role']; // Skenario A
-            } elseif (isset($data['content']['role'])) {
-                $userRole = $data['content']['role']; // Skenario B
-            }
-            
-            // Jika tetap tidak ditemukan, set ke 'user'
-            $userRole = $userRole ?? 'user'; 
-            
-            // 🛑 DEBUGGING ALERT: Tampilkan apa yang sebenarnya tersimpan
-            // Jika ini di-run di browser, Anda akan melihat pop-up yang memberitahu role
-            // dd("Role yang diterima: " . $userRole, $data); 
-            // Coba debug ini di local:
-            
-            if ($token) {
-                Session::put('token', $token);
-                Session::put('user_role', $userRole);
-
-                if ($userRole === 'admin') {
-                    // Jika ini yang benar, kita berhasil!
-                    return redirect()->route('dashboard');
-                } else {
-                    Session::forget(['token', 'user_role']);
-                    // Pesan error ini yang muncul, memastikan $userRole bukan 'admin'
-                    return redirect()->back()->withErrors([
-                        'email' => "Akses ditolak. Hanya Admin yang diizinkan. Role yang diterima: " . $userRole
-                    ])->withInput();
-                }
-            }
+        if (!($loginData['success'] ?? false)) {
+            return redirect()->back()->withErrors([
+                'email' => $loginData['message'] ?? 'Login gagal. Silakan coba lagi.'
+            ])->withInput();
         }
 
-        // Jika login gagal
-        return redirect()->back()->withErrors([
-            'email' => $data['message'] ?? 'Login gagal. Silakan coba lagi.'
-        ])->withInput();
+        $token = $loginData['content']['token'] ?? null;
+        if (!$token) {
+            return redirect()->back()->withErrors([
+                'email' => 'Token tidak diterima dari server.'
+            ])->withInput();
+        }
+        Session::put('temp_token', $token);
+
+        // Langkah 2: Ambil data user via /self menggunakan token
+        $selfResponse = Http::withToken($token)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get('http://127.0.0.1:8001/api/self');
+
+        $selfData = $selfResponse->json();
+
+        if (!($selfData['success'] ?? false)) {
+            // Opsional: logout otomatis di API jika /self gagal
+            Http::withToken($token)->post('http://127.0.0.1:8001/api/signout');
+            return redirect()->back()->withErrors([
+                'email' => 'Gagal memuat data profil pengguna.'
+            ]);
+        }
+
+        $userRole = $selfData['content']['role'] ?? 'user';
+        $userEmail = $selfData['content']['email'] ?? $request->email;
+        
+        if ($userRole === 'admin') {
+            Session::put('token', $token);
+            Session::put('user_role', $userRole);
+            Session::put('user_email', $userEmail);
+            return redirect()->route('dashboard');
+        } else {
+            // Opsional: logout di API karena akses ditolak
+            Http::withToken($token)->post('http://127.0.0.1:8001/api/signout');
+            return redirect()->back()->withErrors([
+                'email' => "Akses ditolak. Hanya Admin yang diizinkan. Role yang diterima: " . $userRole
+            ])->withInput();
+        }
     }
 
     public function logout()

@@ -15,21 +15,21 @@
 
     {{-- Notifikasi (Success, Error, Warning) --}}
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
+        <span class="block sm:inline">{{ session('success') }}</span>
+    </div>
     @endif
     @if(session('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
-        </div>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+        <span class="block sm:inline">{{ session('error') }}</span>
+    </div>
     @endif
     @if(session('warning'))
-        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg relative" role="alert">
-            <span class="block sm:inline">{{ session('warning') }}</span>
-        </div>
+    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg relative" role="alert">
+        <span class="block sm:inline">{{ session('warning') }}</span>
+    </div>
     @endif
-    
+
     {{-- Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @foreach($cards as $card)
@@ -89,10 +89,23 @@
                                 Aktif
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            {{-- Route show menggunakan NISN sebagai parameter --}}
-                            <a href="{{ route('siswa.show', $siswa['nisn']) }}" class="text-[#4A3AFF] hover:text-[#3A2AFF]">Detail</a>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-3">
+                            <a href="{{ route('siswa.edit', $siswa['id'] ?? $siswa['nisn']) }}"
+                                class="text-yellow-600 hover:text-yellow-800">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('siswa.destroy', $siswa['id'] ?? $siswa['nisn']) }}"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus siswa ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-red-600 hover:text-red-800" type="submit">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
+
                     </tr>
                     @endforeach
                 </tbody>
@@ -100,7 +113,9 @@
         </div>
         @else
         <div class="bg-gray-50 rounded-lg p-8 flex flex-col items-center justify-center border-2 border-dashed border-gray-200">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
             <p class="text-gray-500 mt-2">Tidak ada data siswa ditemukan.</p>
             <a href="{{ route('siswa.create') }}" class="mt-3 text-sm font-medium text-[#4A3AFF] hover:text-[#3A2AFF]">Tambah Siswa Pertama</a>
         </div>

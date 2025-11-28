@@ -19,7 +19,6 @@ class StudentController extends Controller
 
         // Ambil token dari Session
         $this->token = Session::get('token');
-
     }
 
     /**
@@ -44,7 +43,6 @@ class StudentController extends Controller
             $data = $response->json();
             // Data list_siswa dibiarkan array of array sesuai kebutuhan view
             $list_siswa = ($data['success'] ?? false) ? $data['content'] : [];
-
         } catch (\Exception $e) {
             $list_siswa = [];
             Session::flash('error', 'Koneksi ke server API gagal atau timeout.');
@@ -98,46 +96,35 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi Sederhana di FE
         $request->validate([
-            'nisn' => 'required|string|max:10',
-            'nama_siswa' => 'required|string|max:150',
-            'id_kelas' => 'required|integer',
-            'alamat' => 'required|string',
-            // Tambahkan validasi lain (misalnya: tanggal lahir, jenis kelamin)
+            'nisn' => 'required|string|max:20',
+            'nama_siswa' => 'required|string|max:100',
+            'kelas' => 'required|string|max:20',
+            'user_id' => 'required|string',
         ]);
 
-        // 2. Siapkan data yang akan dikirim ke API (Sesuaikan KEY API Anda!)
         $payload = [
+            'name' => $request->nama_siswa,
             'nisn' => $request->nisn,
-            'nama' => $request->nama_siswa,
-            'class_id' => $request->id_kelas,
-            'address' => $request->alamat,
+            'kelas' => $request->kelas,
+            'user_id' => $request->user_id,
         ];
 
         try {
-            // 3. Kirim data ke API menggunakan POST
             $response = Http::withToken($this->token)->post("{$this->apiBase}/students", $payload);
 
-            // 4. Cek respons API
             if ($response->successful() && ($response->json()['success'] ?? false)) {
-                return redirect()->route('siswa.index')->with('success', 'Data Siswa baru berhasil ditambahkan!');
+                return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil ditambahkan!');
             }
 
-            // Jika API merespons error (misal 422 Validasi dari BE)
-            $error_data = $response->json();
-            $message = $error_data['message'] ?? 'Gagal menyimpan data siswa (API Error).';
-            
-            // Mengembalikan error validasi dari API ke form
-            if ($response->status() === 422 && isset($error_data['errors'])) {
-                // Flash errors dari API ke session agar bisa diakses di Blade
-                return back()->withInput()->withErrors($error_data['errors']);
+            $error = $response->json();
+            if ($response->status() === 422 && isset($error['content'])) {
+                return back()->withErrors($error['content'])->withInput();
             }
-            
-            return back()->withInput()->with('error', $message);
 
+            return back()->with('error', $error['message'] ?? 'Gagal menyimpan data siswa.')->withInput();
         } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Koneksi ke server API gagal saat menyimpan data.');
+            return back()->with('error', 'Koneksi ke server API gagal.')->withInput();
         }
     }
 
@@ -158,7 +145,6 @@ class StudentController extends Controller
 
             $data = $response->json();
             $siswa = ($data['success'] ?? false) ? (object)$data['content'] : null;
-
         } catch (\Exception $e) {
             abort(500, 'Koneksi ke server API gagal saat mengambil detail siswa.');
         }
@@ -168,5 +154,71 @@ class StudentController extends Controller
         }
 
         return view('siswa.show', ['siswa' => $siswa]);
+    }
+
+    public function edit($id)
+    {
+        try {
+            $response = Http::withToken($this->token)
+                ->get("{$this->apiBase}/students/{$id}");
+
+            if ($response->failed()) {
+                return back()->with('error', 'Gagal mengambil data siswa.');
+            }
+
+            $data = $response->json();
+            $siswa = $data['content'] ?? null;
+        } catch (\Exception $e) {
+            return back()->with('error', 'Koneksi API gagal.');
+        }
+
+        return view('siswa.edit', ['siswa' => $siswa]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'nisn' => 'required|string|max:20',
+            'kelas' => 'required|string|max:20',
+            'user_id' => 'required|string',
+        ]);
+
+        try {
+            $payload = [
+                'name' => $request->name,
+                'nisn' => $request->nisn,
+                'kelas' => $request->kelas,
+                'user_id' => $request->user_id,
+            ];
+
+            $response = Http::withToken($this->token)
+                ->put("{$this->apiBase}/students/{$id}", $payload);
+
+            if ($response->failed()) {
+                return back()->with('error', 'Gagal mengupdate siswa.')->withInput();
+            }
+
+            return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Koneksi API gagal.')->withInput();
+        }
+    }
+
+
+    public function destroy($id)
+    {
+        try {
+            $response = Http::withToken($this->token)
+                ->delete("{$this->apiBase}/students/{$id}");
+
+            if ($response->failed()) {
+                return back()->with('error', 'Gagal menghapus siswa.');
+            }
+
+            return redirect()->route('siswa.index')->with('success', 'Siswa berhasil dihapus!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Koneksi API gagal.');
+        }
     }
 }

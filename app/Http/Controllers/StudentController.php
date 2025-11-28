@@ -15,7 +15,7 @@ class StudentController extends Controller
     public function __construct()
     {
         // Tetapkan Base URL API
-        $this->apiBase = 'http://127.0.0.1:8001/api';
+        $this->apiBase = 'https://web-app-spp-tb-production.up.railway.app/api';
 
         // Ambil token dari Session
         $this->token = Session::get('token');
@@ -54,7 +54,6 @@ class StudentController extends Controller
 
         $cards = [
             (object)['title' => 'Total Siswa Aktif', 'value' => number_format($totalAktif), 'trend' => '0%'],
-            (object)['title' => 'Siswa Lulus', 'value' => number_format($totalLulus), 'trend' => '0%'],
         ];
 
         return view('siswa.index', [

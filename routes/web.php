@@ -38,6 +38,9 @@ Route::middleware('auth.token')->group(function () {
     Route::get('/tunggakan', [DuedateController::class, 'index'])->name('tunggakan.index');
     Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifikasi.index');
     Route::get('/pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
+    Route::get('/pembayaran/create', [PaymentController::class, 'create'])->name('pembayaran.create');
+    Route::post('/pembayaran/store', [PaymentController::class, 'store'])->name('pembayaran.store');
+
 
 
     // Route Halaman Laporan (Index)

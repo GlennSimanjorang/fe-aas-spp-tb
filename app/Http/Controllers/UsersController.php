@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class UsersController extends Controller
 {
-    protected $apiBaseUrl = 'http://localhost:8001/api/';
+    protected $apiBaseUrl = 'https://web-app-spp-tb-production.up.railway.app/api';
 
     private function getAdminToken()
     {

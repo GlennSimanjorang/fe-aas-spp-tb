@@ -12,7 +12,7 @@ class DashboardController extends Controller
     {
         // Ambil token login admin dari session
         $token = Session::get('token');
-        $apiBase = 'http://127.0.0.1:8001/api';
+        $apiBase = 'https://web-app-spp-tb-production.up.railway.app/api';
 
         try {
             // -----------------------------

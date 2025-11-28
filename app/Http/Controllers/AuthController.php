@@ -19,7 +19,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $response = Http::post('http://127.0.0.1:8001/api/signin', [
+        $response = Http::post('https://web-app-spp-tb-production.up.railway.app/api/signin', [
             'email' => $request->email,
             'password' => $request->password,
         ]);
@@ -44,7 +44,7 @@ class AuthController extends Controller
     {
         $token = session('token');
         if ($token) {
-            Http::withToken($token)->post('http://127.0.0.1:8001/api/signout');
+            Http::withToken($token)->post('https://web-app-spp-tb-production.up.railway.app/api/signout');
         }
 
         session()->forget('token');

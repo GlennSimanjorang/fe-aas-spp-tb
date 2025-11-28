@@ -29,7 +29,8 @@ class AuthController extends Controller
         if (isset($data['success']) && $data['success']) {
 
             // SIMPAN TOKEN ADMIN
-            session(['admin_token' => $data['content']['token']]);
+            session(['token' => $data['content']['token']]);
+
 
             return redirect()->route('dashboard');
         }

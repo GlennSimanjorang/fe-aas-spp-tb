@@ -9,6 +9,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DuedateController;
 use App\Http\Controllers\NotificationController;
 
+
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -38,4 +39,11 @@ Route::middleware('auth.token')->group(function () {
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index'); 
     // Route untuk Proses Export
     Route::get('/laporan/export/{type}', [ReportController::class, 'export'])->name('report.export');
+
+     // 🔥 Tambahkan route untuk Daftar User
+    Route::get('/users', [App\Http\Controllers\UsersController::class, 'index'])->name('users.index');
+    Route::resource('users', App\Http\Controllers\UsersController::class);
+
+
 });
+

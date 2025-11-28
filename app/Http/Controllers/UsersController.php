@@ -4,14 +4,29 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class UsersController extends Controller
 {
-    protected $apiBaseUrl = 'https://web-app-spp-tb-production.up.railway.app/api';
+    protected $apiBase;
+    protected $token;
 
+    public function __construct()
+    {
+        // Base URL API
+        $this->apiBase = 'https://web-app-spp-tb-production.up.railway.app/api/';
+
+        // Ambil token dari session
+        $this->token = Session::get('token');
+    }
+
+    /**
+     * ADMIN TOKEN — jika peran admin butuh token berbeda, set di sini.
+     * Kalau tidak butuh, pakai session biasa.
+     */
     private function getAdminToken()
     {
-        return session('token');
+        return $this->token;
     }
 
     // =========================================================
@@ -19,10 +34,9 @@ class UsersController extends Controller
     // =========================================================
     public function index()
     {
-        $token = session('token');
-
         try {
-            $response = Http::withToken($token)->get($this->apiBaseUrl . 'users');
+            $response = Http::withToken($this->token)
+                ->get($this->apiBase . 'users');
 
             if (!$response->successful()) {
                 return view('daftar_user.index', ['users' => collect()])
@@ -33,6 +47,7 @@ class UsersController extends Controller
                 ->map(fn($u) => (object) $u);
 
             return view('daftar_user.index', compact('users'));
+
         } catch (\Exception $e) {
             return view('daftar_user.index', ['users' => collect()])
                 ->with('error', 'Koneksi ke API gagal');
@@ -64,7 +79,7 @@ class UsersController extends Controller
 
         try {
             $response = Http::withToken($token)
-                ->post($this->apiBaseUrl . 'users', [
+                ->post($this->apiBase . 'users', [
                     'name' => $request->name,
                     'email' => $request->email,
                     'role' => $request->role,
@@ -78,7 +93,7 @@ class UsersController extends Controller
                     ->with('success', 'User berhasil dibuat!');
             }
 
-            if ($response->status() == 422) {
+            if ($response->status() === 422) {
                 return back()
                     ->withInput()
                     ->withErrors($response->json('errors') ?? [])
@@ -86,6 +101,7 @@ class UsersController extends Controller
             }
 
             return back()->withInput()->with('error', $response->json('message'));
+
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'API tidak dapat dihubungi.');
         }
@@ -96,9 +112,8 @@ class UsersController extends Controller
     // =========================================================
     public function edit($id)
     {
-        $token = session('token');
-
-        $response = Http::withToken($token)->get($this->apiBaseUrl . "users/$id");
+        $response = Http::withToken($this->token)
+            ->get($this->apiBase . "users/$id");
 
         if (!$response->successful()) {
             return back()->with('error', 'Gagal mengambil data user.');
@@ -121,14 +136,13 @@ class UsersController extends Controller
             'number' => 'nullable|string',
         ]);
 
-        $token = session('token');
-
-        $response = Http::withToken($token)->put($this->apiBaseUrl . "users/$id", [
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'number' => $request->number,
-        ]);
+        $response = Http::withToken($this->token)
+            ->put($this->apiBase . "users/$id", [
+                'name' => $request->name,
+                'email' => $request->email,
+                'role' => $request->role,
+                'number' => $request->number,
+            ]);
 
         if ($response->successful()) {
             return redirect()->route('users.index')
@@ -146,7 +160,8 @@ class UsersController extends Controller
         $token = $this->getAdminToken();
 
         try {
-            $response = Http::withToken($token)->delete($this->apiBaseUrl . "users/$id");
+            $response = Http::withToken($token)
+                ->delete($this->apiBase . "users/$id");
 
             if ($response->successful()) {
                 return redirect()->route('users.index')
@@ -154,6 +169,7 @@ class UsersController extends Controller
             }
 
             return back()->with('error', $response->json('message'));
+
         } catch (\Exception $e) {
             return back()->with('error', 'Koneksi ke API gagal.');
         }

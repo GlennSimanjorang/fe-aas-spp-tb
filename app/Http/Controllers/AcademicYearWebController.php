@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class AcademicYearWebController extends Controller
 {
-    protected $apiBaseUrl = 'https://web-app-spp-tb-production.up.railway.app/api';
+    protected $apiBase;
+    protected $token;
 
-    private function getToken()
+    public function __construct()
     {
-        return session('token');
+        // Base URL API
+        $this->apiBase = 'https://web-app-spp-tb-production.up.railway.app/api/';
+
+        // Ambil token dari session
+        $this->token = Session::get('token');
     }
 
     // ===============================
@@ -20,8 +26,8 @@ class AcademicYearWebController extends Controller
     public function index()
     {
         try {
-            $response = Http::withToken($this->getToken())
-                ->get($this->apiBaseUrl . 'academic-years');
+            $response = Http::withToken($this->token)
+                ->get($this->apiBase . 'academic-years');
 
             $years = collect($response->json('content.data') ?? [])
                 ->map(fn($y) => (object) $y);
@@ -49,18 +55,18 @@ class AcademicYearWebController extends Controller
     {
         $request->validate([
             'school_years' => 'required|max:9',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'is_active' => 'nullable|boolean',
+            'start_date'   => 'required|date',
+            'end_date'     => 'required|date|after:start_date',
+            'is_active'    => 'nullable|boolean',
         ]);
 
         try {
-            $response = Http::withToken($this->getToken())
-                ->post($this->apiBaseUrl . 'academic-years', [
+            $response = Http::withToken($this->token)
+                ->post($this->apiBase . 'academic-years', [
                     'school_years' => $request->school_years,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'is_active' => $request->is_active ?? false,
+                    'start_date'   => $request->start_date,
+                    'end_date'     => $request->end_date,
+                    'is_active'    => $request->is_active ?? false,
                 ]);
 
             if ($response->successful()) {
@@ -80,8 +86,8 @@ class AcademicYearWebController extends Controller
     // ===============================
     public function edit($id)
     {
-        $response = Http::withToken($this->getToken())
-            ->get($this->apiBaseUrl . "academic-years/$id");
+        $response = Http::withToken($this->token)
+            ->get($this->apiBase . "academic-years/$id");
 
         if (!$response->successful()) {
             return back()->with('error', 'Data tidak ditemukan.');
@@ -99,18 +105,18 @@ class AcademicYearWebController extends Controller
     {
         $request->validate([
             'school_years' => 'required|max:9',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'is_active' => 'nullable|boolean',
+            'start_date'   => 'required|date',
+            'end_date'     => 'required|date|after:start_date',
+            'is_active'    => 'nullable|boolean',
         ]);
 
         try {
-            $response = Http::withToken($this->getToken())
-                ->put($this->apiBaseUrl . "academic-years/$id", [
+            $response = Http::withToken($this->token)
+                ->put($this->apiBase . "academic-years/$id", [
                     'school_years' => $request->school_years,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'is_active' => $request->is_active ?? false,
+                    'start_date'   => $request->start_date,
+                    'end_date'     => $request->end_date,
+                    'is_active'    => $request->is_active ?? false,
                 ]);
 
             if ($response->successful()) {
@@ -131,8 +137,8 @@ class AcademicYearWebController extends Controller
     public function destroy($id)
     {
         try {
-            $response = Http::withToken($this->getToken())
-                ->delete($this->apiBaseUrl . "academic-years/$id");
+            $response = Http::withToken($this->token)
+                ->delete($this->apiBase . "academic-years/$id");
 
             if ($response->successful()) {
                 return redirect()->route('academic-years.index')

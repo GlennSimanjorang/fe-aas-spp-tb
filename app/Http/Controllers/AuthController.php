@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Session; // Pastikan ini di-use
 class AuthController extends Controller
 {
     public function showLogin()
@@ -19,25 +19,64 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $response = Http::post('https://web-app-spp-tb-production.up.railway.app/api/signin', [
+        // Langkah 1: Login ke API
+        $loginResponse = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post('https://web-app-spp-tb-production.up.railway.app/api/signin', [
             'email' => $request->email,
             'password' => $request->password,
         ]);
 
-        $data = $response->json();
+        $loginData = $loginResponse->json();
 
-        if (isset($data['success']) && $data['success']) {
-
-            // SIMPAN TOKEN ADMIN
-            session(['token' => $data['content']['token']]);
-
-
-            return redirect()->route('dashboard');
+        if (!($loginData['success'] ?? false)) {
+            return redirect()->back()->withErrors([
+                'email' => $loginData['message'] ?? 'Login gagal. Silakan coba lagi.'
+            ])->withInput();
         }
 
-        return redirect()->back()->withErrors([
-            'email' => $data['message'] ?? 'Login gagal. Silakan coba lagi.'
-        ])->withInput();
+        $token = $loginData['content']['token'] ?? null;
+        if (!$token) {
+            return redirect()->back()->withErrors([
+                'email' => 'Token tidak diterima dari server.'
+            ])->withInput();
+        }
+
+        // Langkah 2: Ambil data user via /self menggunakan token
+        $selfResponse = Http::withToken($token)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get('https://web-app-spp-tb-production.up.railway.app/api/self');
+
+        $selfData = $selfResponse->json();
+
+        if (!($selfData['success'] ?? false)) {
+            // Opsional: logout otomatis di API jika /self gagal
+            Http::withToken($token)->post('https://web-app-spp-tb-production.up.railway.app/api/signout');
+            return redirect()->back()->withErrors([
+                'email' => 'Gagal memuat data profil pengguna.'
+            ]);
+        }
+
+        $userRole = $selfData['content']['role'] ?? 'user';
+        $userEmail = $selfData['content']['email'] ?? $request->email;
+
+        // Sesuaikan dengan role yang diizinkan (kamu: role = 'admin')
+        // TAPI: dari contoh /self, role-nya adalah "parents", bukan "admin"
+        // Jadi pastikan akunmu di Go API benar-benar punya role "admin"
+
+        if ($userRole === 'admin') {
+            Session::put('token', $token);
+            Session::put('user_role', $userRole);
+            Session::put('user_email', $userEmail);
+            return redirect()->route('dashboard');
+        } else {
+            // Opsional: logout di API karena akses ditolak
+            Http::withToken($token)->post('https://web-app-spp-tb-production.up.railway.app/api/signout');
+            return redirect()->back()->withErrors([
+                'email' => "Akses ditolak. Hanya Admin yang diizinkan. Role yang diterima: " . $userRole
+            ])->withInput();
+        }
     }
 
     public function logout()

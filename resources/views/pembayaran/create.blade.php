@@ -1,60 +1,58 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto">
+<div class="container">
 
-    <div class="bg-blue-600 text-white p-4 rounded-lg shadow mb-6">
-        <h1 class="text-xl font-semibold">Input Manual Pembayaran</h1>
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $e)
+                <li>{{ $e }}</li>
+            @endforeach
+        </ul>
     </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+    <h3 class="mb-4">Buat Tagihan Baru</h3>
 
     <form action="{{ route('pembayaran.store') }}" method="POST">
         @csrf
 
-        {{-- Pilih Tagihan --}}
-        <div class="mb-4">
-            <label class="block font-semibold mb-1">Tagihan</label>
-            <select name="bill_id" class="w-full p-2 border rounded-md" required>
-                <option value="">-- Pilih Tagihan --</option>
-                @foreach($bills as $b)
-                <option value="{{ $b['id'] }}">
-                    {{ $b['student_name'] }} - {{ $b['month_year'] }} (Rp {{ number_format($b['amount'],0,',','.') }})
-                </option>
+        {{-- PILIH SISWA --}}
+        <div class="mb-3">
+            <label for="student_id" class="form-label">Siswa</label>
+            <select name="student_id" class="form-control" required>
+                <option value="">-- pilih siswa --</option>
+                @foreach($students as $s)
+                    <option value="{{ $s['id'] }}">{{ $s['name'] }}</option>
                 @endforeach
             </select>
         </div>
 
-        {{-- Jumlah --}}
-        <div class="mb-4">
-            <label class="block font-semibold mb-1">Jumlah Dibayar</label>
-            <input type="number" name="amount" class="w-full p-2 border rounded-md" required>
-        </div>
-
-        {{-- Tanggal --}}
-        <div class="mb-4">
-            <label class="block font-semibold mb-1">Tanggal Pembayaran</label>
-            <input type="date" name="payment_date" class="w-full p-2 border rounded-md" required>
-        </div>
-
-        {{-- Metode --}}
-        <div class="mb-4">
-            <label class="block font-semibold mb-1">Metode Pembayaran</label>
-            <select name="method" class="w-full p-2 border rounded-md" required>
-                <option value="cash">Cash</option>
-                <option value="transfer">Transfer</option>
+        {{-- PILIH KATEGORI PEMBAYARAN --}}
+        <div class="mb-3">
+            <label for="payment_categories_id" class="form-label">Kategori</label>
+            <select name="payment_categories_id" class="form-control" required>
+                <option value="">-- pilih kategori pembayaran --</option>
+                @foreach($categories as $c)
+                    <option value="{{ $c['id'] }}">{{ $c['name'] }} (Rp {{ $c['amount'] }})</option>
+                @endforeach
             </select>
         </div>
 
-        {{-- Catatan --}}
-        <div class="mb-4">
-            <label class="block font-semibold mb-1">Catatan (Opsional)</label>
-            <textarea name="notes" class="w-full p-2 border rounded-md"></textarea>
+        {{-- TAHUN AJARAN --}}
+        <div class="mb-3">
+            <label class="form-label">Tahun Ajaran</label>
+            <select name="academic_years_id" class="form-control" required>
+                <option value="1">2024 / 2025</option>
+            </select>
         </div>
 
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md font-semibold">
-            Simpan
-        </button>
-
-        <a href="{{ route('pembayaran.index') }}" class="ml-3 text-gray-600">Kembali</a>
+        <button class="btn btn-primary">Simpan</button>
 
     </form>
 

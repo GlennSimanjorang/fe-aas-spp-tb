@@ -8,7 +8,9 @@
     @if(session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
-
+    <a href="{{ route('pembayaran.create') }}" class="btn btn-primary mb-3">
+    + Tambah Tagihan
+</a>
     <table class="table table-bordered table-striped">
         <thead>
             <tr>

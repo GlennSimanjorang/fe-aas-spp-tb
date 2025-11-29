@@ -54,4 +54,66 @@ class PaymentController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
+    public function create(Request $request)
+    {
+        try {
+            $token = session('token');
+
+            // Ambil semua siswa
+            $students = Http::withToken($token)
+                ->get('https://web-app-spp-tb-production.up.railway.app/api/students')
+                ->json()['content'] ?? [];
+
+            // Ambil semua kategori pembayaran
+            $categories = Http::withToken($token)
+                ->get('https://web-app-spp-tb-production.up.railway.app/api/payment-categories')
+                ->json()['content'] ?? [];
+
+            // Ambil academic years
+            $years = Http::withToken($token)
+                ->get('https://web-app-spp-tb-production.up.railway.app/api/academic-years')
+                ->json()['content'] ?? [];
+
+            return view('pembayaran.create', compact('students', 'categories', 'years'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    public function store(Request $request)
+{
+    try {
+        $token = session('token');
+
+        $validated = $request->validate([
+            'student_id'            => 'required|integer',
+            'payment_categories_id' => 'required|integer',
+            'academic_years_id'     => 'required|integer',
+        ]);
+
+        // Kirim ke API
+        $response = Http::withToken($token)
+            ->withoutRedirecting()
+            ->post('https://web-app-spp-tb-production.up.railway.app/api/bills', $validated);
+
+        if (!$response->successful()) {
+            return back()->with('error', 'Gagal membuat tagihan.')->withInput();
+        }
+
+        $json = $response->json();
+
+        if (!($json['success'] ?? false)) {
+            return back()->with('error', $json['message'] ?? 'Gagal membuat tagihan.')->withInput();
+        }
+
+        // SUCCESS → redirect ke index
+        if ($response->status() === 302 || ($response->json()['success'] ?? false)) {
+    return redirect()->route('pembayaran.index')
+                     ->with('success', 'Tagihan berhasil dibuat');
+}
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error: '.$e->getMessage());
+    }
+}
 }

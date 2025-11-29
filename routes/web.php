@@ -56,4 +56,7 @@ Route::middleware('auth.token')->group(function () {
     Route::get('/siswa/{id}/edit', [StudentController::class, 'edit'])->name('siswa.edit');
     Route::put('/siswa/{id}', [StudentController::class, 'update'])->name('siswa.update');
     Route::delete('/siswa/{id}', [StudentController::class, 'destroy'])->name('siswa.destroy');
+
+    Route::get('/notifikasi', [NotificationController::class, 'index'])
+        ->name('notifikasi.index');
 });

@@ -5,7 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportPaymentController;
 use App\Http\Controllers\DuedateController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AcademicYearWebController;
@@ -40,13 +40,10 @@ Route::middleware('auth.token')->group(function () {
     Route::get('/pembayaran', [PaymentController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/create', [PaymentController::class, 'create'])->name('pembayaran.create');
     Route::post('/pembayaran/store', [PaymentController::class, 'store'])->name('pembayaran.store');
-
-
-
-    // Route Halaman Laporan (Index)
-    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
-    // Route untuk Proses Export
-    Route::get('/laporan/export/{type}', [ReportController::class, 'export'])->name('report.export');
+    Route::get('/laporan/payments', [ReportPaymentController::class, 'index'])
+    ->name('report.payments')
+    ->middleware('auth');
+    Route::get('/laporan', [ReportPaymentController::class, 'index']);
 
     // 🔥 Tambahkan route untuk Daftar User
     Route::get('/users', [App\Http\Controllers\UsersController::class, 'index'])->name('users.index');
